@@ -110,8 +110,8 @@ def predict(theta, X):
 
     # ====================== YOUR CODE HERE ======================
     
-    pred[sigmoid(np.dot(X, theta)) >= 0.5] = 1
-    pred[sigmoid(np.dot(X, theta)) < 0.5] = 0
+    pred = np.dot(X, theta) >= 0
+    # pred[np.dot(X, theta) < 0] = 0
     # ============================================================
 
     return pred
@@ -143,7 +143,7 @@ def cost_function_reg(theta, X, y, lmb):
     
     m, _ = X.shape
     h = sigmoid(np.dot(X, theta))
-    J = np.sum(-y * np.log(h) - (1 - y) * np.log(1 - h)) / m + lmb / m * np.dot(theta * theta.T)
+    J = np.sum(-y * np.log(h) - (1 - y) * np.log(1 - h)) / m + lmb / m * np.dot(theta, theta.T)
     # ============================================================
 
     return J
@@ -181,7 +181,7 @@ def logistic_regression():
     X = np.hstack((np.ones((m, 1)), X))
 
     # 初始化参数
-    theta_initial = np.zeros_like(X[0])*0.1
+    theta_initial = np.ones_like(X[0]) * 0.1
 
     # 测试 sigmoid 函数
     z = np.array([-10.0, -5.0, 0.0, 5.0, 10.0])
@@ -243,7 +243,7 @@ def logistic_regression_reg(lmb=1.0):
     X = map_feature(X[:, 0], X[:, 1])
 
     # 初始化参数
-    theta_initial = np.zeros_like(X[0, :]) * 0.1
+    theta_initial = np.zeros_like(X[0, :]) 
 
     # 计算并打印初始参数对应的代价与梯度
     cost = cost_function_reg(theta_initial, X, y, lmb=lmb)
@@ -256,10 +256,10 @@ def logistic_regression_reg(lmb=1.0):
     maxiter = 200
     # ====================== YOUR CODE HERE ======================
     
-    ret = op.fmin_cg(cost_function, 
+    ret = op.fmin_cg(cost_function_reg, 
                      theta_initial, 
-                     fprime = cost_gradient, 
-                     args = (X, y),
+                     fprime = cost_gradient_reg, 
+                     args = (X, y,lmb),
                      maxiter = 400,
                      full_output = True)
     # ============================================================
